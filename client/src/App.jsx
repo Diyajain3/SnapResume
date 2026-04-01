@@ -1,0 +1,27 @@
+import React from 'react'
+import { Route, Routes } from 'react-router-dom'
+import Home from './pages/Home'
+import Dashboard from './pages/dashboard'
+import Layout from './pages/Layout'
+import Preview from './pages/Preview'
+import ResumeBuilder from './pages/ResumeBuilder'
+import Login from './pages/Login'
+const App = () => {
+  return (
+    <>
+      <Routes>
+        <Route path='/' element={<Home/>}/>
+        
+        <Route path='app' element={<Layout/>}>
+            <Route  index  element={<Dashboard/>}/>
+            <Route  path='builder/:resumeId' element={<ResumeBuilder/>}/>
+        </Route>
+        <Route path='view/:resumeId' element={<Preview/>}></Route>
+        <Route path='login' element={<Login/>}></Route>
+        
+      </Routes>
+    </>
+  )
+}
+
+export default App
