@@ -1,4 +1,4 @@
-import dummy_profile from './dummy_profile.png'
+import dummy_profile from './OIP.jpg'
 
 export const dummyResumeData = [
     {
