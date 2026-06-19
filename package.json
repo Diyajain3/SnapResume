@@ -1,0 +1,19 @@
+{
+  "name": "snapresume",
+  "version": "1.0.0",
+  "description": "Unified Full-Stack Resume Builder",
+  "main": "server/server.js",
+  "type": "module",
+  "scripts": {
+    "install:client": "npm install --prefix client",
+    "install:server": "npm install --prefix server",
+    "build:client": "npm run build --prefix client",
+    "postinstall": "npm run install:client && npm run install:server",
+    "build": "npm run build:client",
+    "start": "node server/server.js",
+    "dev": "npm run dev --prefix server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
