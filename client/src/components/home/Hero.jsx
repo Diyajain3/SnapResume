@@ -97,7 +97,7 @@ const Hero = () => {
               </button>
 
               <button
-                onClick={() => navigate("/signup")}
+                onClick={() => navigate("/login")}
                 className="px-6 py-2 bg-indigo-700 text-white active:scale-95 hover:bg-indigo-600 transition rounded-full text-sm font-semibold shadow-lg shadow-indigo-100"
               >
                 Get Started
@@ -192,7 +192,7 @@ const Hero = () => {
                 </button>
 
                 <button
-                  onClick={() => navigate("/signup")}
+                  onClick={() => navigate("/login")}
                   className="px-8 py-3 bg-indigo-700 text-white rounded-full shadow-lg hover:bg-indigo-600 transition"
                 >
                   Get Started
