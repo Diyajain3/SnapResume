@@ -74,7 +74,7 @@ const PersonalInfoForm = ({
         </label>
 
         {/* Remove Background Toggle */}
-        {typeof data.image === "object" && data.image && (
+        {data.image && (
           <div>
             <p className="text-sm text-gray-700 mb-1">
               Remove Background
@@ -84,9 +84,9 @@ const PersonalInfoForm = ({
               <input
                 type="checkbox"
                 className="sr-only peer"
-                checked={removeBackground}
-                onChange={() =>
-                  setRemoveBackground((prev) => !prev)
+                checked={data.removeBackground || false}
+                onChange={(e) =>
+                  handleChange("removeBackground", e.target.checked)
                 }
               />
 

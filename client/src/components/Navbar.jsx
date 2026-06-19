@@ -1,17 +1,24 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../app/features/authSlice";
 
 const Navbar = () => {
-  const user = { name: "John Doe" };
+  const {user}=useSelector(state=>state.auth)
+  const dispatch=useDispatch();
+
   const navigate = useNavigate();
-  const logoutUser = () => {
-    navigate("/");
-  };
+ const logoutUser = () => {
+  navigate("/", { replace: true });
+  setTimeout(() => {
+    dispatch(logout());
+  }, 0);
+};
   return (
     <div className="shadow bg-white">
       <nav className="flex items-center justify-between max-w-7xl mx-auto px-4 py-3.5 text-slate-800 transition-all">
-        <Link>
-          <div className="flex items-center gap-2">
+        <Link to="/">
+          <div className="flex items-center gap-2" >
             <svg
               width="32"
               height="32"

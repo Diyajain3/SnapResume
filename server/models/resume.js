@@ -45,6 +45,11 @@ const ResumeSchema = new mongoose.Schema(
         default: "",
       },
 
+      removeBackground: {
+        type: Boolean,
+        default: false,
+      },
+
       full_name: {
         type: String,
         default: "",
@@ -78,6 +83,11 @@ const ResumeSchema = new mongoose.Schema(
       website: {
         type: String,
         default: "",
+      },
+
+      removeBackground: {
+        type: Boolean,
+        default: false,
       },
     },
 

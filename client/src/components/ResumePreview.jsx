@@ -36,22 +36,47 @@ const ResumePreview = ({ data, template, accentColor, classes = "" }) => {
           @media print {
             html,
             body {
-              width: 8.5 in;
-              height: 11in;
-              overflow: hidden;
+              width: 100%;
+              height: auto;
+              overflow: visible;
+              background: white;
             }
+            
+            /* Hide non-print areas completely so they don't take layout space */
+            .no-print,
+            #root > div > div:first-child,
+            .lg\\:col-span-5,
+            .absolute.top-2.right-2 {
+              display: none !important;
+            }
+            
+            /* Reset grids and layout containers to block elements */
+            .max-w-7xl,
+            .grid,
+            .lg\\:col-span-7 {
+              display: block !important;
+              width: 100% !important;
+              max-width: 100% !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              border: none !important;
+              box-shadow: none !important;
+            }
+
             body * {
               visibility: hidden;
             }
+            
             #resume-preview,
             #resume-preview * {
               visibility: visible;
             }
+            
             #resume-preview {
               position: absolute;
               left: 0;
               top: 0;
-              width: 100%;
+              width: 100% !important;
               height: auto;
               margin: 0;
               padding: 0;

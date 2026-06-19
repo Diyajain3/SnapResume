@@ -1,3 +1,4 @@
+import React, { useMemo, useEffect } from "react";
 import { Mail, Phone, MapPin, Linkedin, Globe } from "lucide-react";
 
 const ClassicTemplate = ({ data, accentColor }) => {
@@ -10,10 +11,52 @@ const ClassicTemplate = ({ data, accentColor }) => {
         });
     };
 
+    const imageUrl = useMemo(() => {
+        const img = data.personal_info?.image;
+        if (!img) return null;
+        
+        let url = "";
+        if (typeof img === "string") {
+            url = img;
+        } else {
+            try {
+                url = URL.createObjectURL(img);
+            } catch (e) {
+                console.error("Error creating object URL:", e);
+                return null;
+            }
+        }
+        
+        if (typeof img === "string" && url.includes("imagekit.io")) {
+            const transform = data.personal_info?.removeBackground ? "w-300,h-300,fo-face,e-bgremove" : "w-300,h-300,fo-face";
+            url = url.includes("?") ? `${url}&tr=${transform}` : `${url}?tr=${transform}`;
+        }
+        return url;
+    }, [data.personal_info?.image, data.personal_info?.removeBackground]);
+
+    useEffect(() => {
+        return () => {
+            const img = data.personal_info?.image;
+            if (imageUrl && typeof img !== "string") {
+                URL.revokeObjectURL(imageUrl);
+            }
+        };
+    }, [imageUrl, data.personal_info?.image]);
+
     return (
         <div className="max-w-4xl mx-auto p-8 bg-white text-gray-800 leading-relaxed">
             {/* Header */}
             <header className="text-center mb-8 pb-6 border-b-2" style={{ borderColor: accentColor }}>
+                {imageUrl && (
+                    <div className="mb-4">
+                        <img 
+                            src={imageUrl} 
+                            alt="Profile" 
+                            className="w-28 h-28 object-cover rounded-full mx-auto" 
+                            style={data.personal_info?.removeBackground ? { mixBlendMode: "multiply" } : {}}
+                        />
+                    </div>
+                )}
                 <h1 className="text-3xl font-bold mb-2" style={{ color: accentColor }}>
                     {data.personal_info?.full_name || "Your Name"}
                 </h1>

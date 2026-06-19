@@ -1,7 +1,29 @@
 import { Briefcase, Trash2, Sparkles, Plus } from 'lucide-react';
 import React from 'react';
+import api from '../configs/api';
 
 const ExperienceForm = ({ data, onChange }) => {
+
+  const handleEnhance = async (index) => {
+    const description = data[index].description;
+    if (!description) {
+      alert("Please write something in the description first before enhancing.");
+      return;
+    }
+    try {
+      const { data: res } = await api.post("/api/ai/enhance-job-desc", {
+        userContent: description,
+      });
+      if (res.success && res.enhancedContent) {
+        updateExperience(index, "description", res.enhancedContent);
+      } else {
+        alert("Enhancement failed, please try again.");
+      }
+    } catch (error) {
+      console.error("Error enhancing job description:", error);
+      alert(error.response?.data?.message || "Failed to enhance job description using AI");
+    }
+  };
 
   const addExperience = () => {
     const newExperience = {
@@ -146,6 +168,7 @@ const ExperienceForm = ({ data, onChange }) => {
                   </label>
 
                   <button
+                    onClick={() => handleEnhance(index)}
                     type="button"
                     className='flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50'
                   >

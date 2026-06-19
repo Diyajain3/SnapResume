@@ -1,6 +1,49 @@
-import React from "react";
-import { Sparkles } from "lucide-react";
-const ProfessionalSummaryForm = ({ data, onChange, setResumeData }) => {
+import React, { useState } from "react";
+import { Loader2, Sparkles } from "lucide-react";
+import api from "../configs/api";
+import { useSelector } from "react-redux";
+
+const ProfessionalSummaryForm = ({ data, onChange }) => {
+  const { token } = useSelector((state) => state.auth);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleEnhance = async () => {
+    if (!data?.trim()) {
+      alert("Please write some summary text first before enhancing.");
+      return;
+    }
+
+    try {
+      setIsGenerating(true);
+
+      const { data: res } = await api.post(
+        "/api/ai/enhance-pro-sum",
+        {
+          userContent: data,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.success && res.enhancedContent) {
+        onChange(res.enhancedContent);
+      } else {
+        alert("Enhancement failed, please try again.");
+      }
+    } catch (error) {
+      console.error("Error enhancing summary:", error);
+      alert(
+        error.response?.data?.message ||
+          "Failed to enhance summary using AI"
+      );
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -12,21 +55,33 @@ const ProfessionalSummaryForm = ({ data, onChange, setResumeData }) => {
             Add summary for your Resume here
           </p>
         </div>
-        <button className="flex items-center gap-2 px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50">
-          <Sparkles className="size-4"> </Sparkles>
-          AI Enhance
+
+        <button
+          disabled={isGenerating}
+          onClick={handleEnhance}
+          className="flex items-center gap-2 px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50"
+        >
+          {isGenerating ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Sparkles className="size-4" />
+          )}
+
+          {isGenerating ? "Enhancing..." : "AI Enhance"}
         </button>
       </div>
+
       <div className="mt-6">
         <textarea
           value={data || ""}
           onChange={(e) => onChange(e.target.value)}
           rows={7}
           className="w-full p-3 px-4 border text-sm border-gray-300 rounded-lg focus:ring focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-none"
-          placeholder="Write a professional summmary that highlights your key strengths and career objectives."
+          placeholder="Write a professional summary that highlights your key strengths and career objectives."
         />
-        <p>
-          Tip: keep it concise (3-4 sentences) and focus on your most relevant
+
+        <p className="text-xs text-gray-500 mt-2">
+          Tip: keep it concise (3–4 sentences) and focus on your most relevant
           achievements and skills
         </p>
       </div>

@@ -21,6 +21,7 @@ export const createResume = async (req, res) => {
       resume: newResume,
     });
   } catch (error) {
+    console.error("Create Resume Backend Error:", error);
     return res.status(500).json({
       message: error.message,
     });
@@ -124,45 +125,65 @@ export const getPublicResumeById = async (req, res) => {
 export const updateResume = async (req, res) => {
   try {
     const userId = req.userId;
-
     const { resumeId, resumeData, removeBackground } = req.body;
-
     const image = req.file;
 
     // convert JSON string to object
-    let resumeDataCopy = JSON.parse(resumeData);
+    let resumeDataCopy = typeof resumeData === "string"
+      ? JSON.parse(resumeData)
+      : resumeData;
+
+    if (resumeDataCopy.personal_info) {
+      resumeDataCopy.personal_info.removeBackground = (removeBackground === "true" || removeBackground === true);
+    }
 
     // upload image if exists
     if (image) {
-      const imageBufferData = fs.createReadStream(image.path);
+      const stream = fs.createReadStream(image.path);
+      let response;
 
-      const response = await imageKit.upload({
-        file: imageBufferData,
-        fileName: "resume.png",
-        folder: "/user-resumes",
-        transformation: {
-          pre:
-            "w-300,h-300,fo-face,z-0.75" +
-            (removeBackground ? ",e-bgremove" : ""),
-        },
-      });
+      try {
+        response = await imageKit.files.upload({
+          file: stream,
+          fileName: `resume-${userId}-${Date.now()}.png`,
+          folder: "/user-resumes",
+          tags: ["resume", userId],
+        });
+      } catch (err) {
+        console.error("ImageKit upload failed:", err.message);
+        throw err;
+      }
 
-      // save image url
-      resumeDataCopy.personal_info.image = response.url;
+      if (!response?.url) {
+        throw new Error("Image upload failed: no response URL returned");
+      }
 
-      // remove temp file
-      fs.unlinkSync(image.path);
+      // Build transformation URL with correct ImageKit syntax
+      let imageUrl = response.url;
+      const transform = (removeBackground === "true" || removeBackground === true)
+        ? "w-300,h-300,fo-face,e-bgremove"
+        : "w-300,h-300,fo-face";
+      imageUrl = imageUrl.includes("?")
+        ? `${imageUrl}&tr=${transform}`
+        : `${imageUrl}?tr=${transform}`;
+
+      if (!resumeDataCopy.personal_info) {
+        resumeDataCopy.personal_info = {};
+      }
+
+      resumeDataCopy.personal_info.image = imageUrl;
+
+      // Clean up temporary file
+      fs.promises.unlink(image.path).catch(() => {});
     }
 
     // update resume
     const resume = await Resume.findOneAndUpdate(
+      { userId, _id: resumeId },
+      { $set: resumeDataCopy },
       {
-        userId,
-        _id: resumeId,
-      },
-      resumeDataCopy,
-      {
-        new: true,
+        returnDocument: "after",
+        runValidators: true,
       }
     );
 

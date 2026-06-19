@@ -1,3 +1,4 @@
+import React, { useMemo, useEffect } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
 
 const MinimalImageTemplate = ({ data, accentColor }) => {
@@ -10,37 +11,68 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
         });
     };
 
+    const imageUrl = useMemo(() => {
+        const img = data.personal_info?.image;
+        if (!img) return null;
+        
+        let url = "";
+        if (typeof img === "string") {
+            url = img;
+        } else {
+            try {
+                url = URL.createObjectURL(img);
+            } catch (e) {
+                console.error("Error creating object URL:", e);
+                return null;
+            }
+        }
+        
+        if (typeof img === "string" && url.includes("imagekit.io")) {
+            const transform = data.personal_info?.removeBackground ? "w-300,h-300,fo-face,e-bgremove" : "w-300,h-300,fo-face";
+            url = url.includes("?") ? `${url}&tr=${transform}` : `${url}?tr=${transform}`;
+        }
+        return url;
+    }, [data.personal_info?.image, data.personal_info?.removeBackground]);
+
+    useEffect(() => {
+        return () => {
+            const img = data.personal_info?.image;
+            if (imageUrl && typeof img !== "string") {
+                URL.revokeObjectURL(imageUrl);
+            }
+        };
+    }, [imageUrl, data.personal_info?.image]);
+
     return (
         <div className="max-w-5xl mx-auto bg-white text-zinc-800">
-            <div className="grid grid-cols-3">
-
-                <div className="col-span-1  py-10">
-                    {/* Image */}
-                    {data.personal_info?.image && typeof data.personal_info.image === 'string' ? (
-                        <div className="mb-6">
-                            <img src={data.personal_info.image} alt="Profile" className="w-32 h-32 object-cover rounded-full mx-auto" style={{ background: accentColor+'70' }} />
-                        </div>
-                    ) : (
-                        data.personal_info?.image && typeof data.personal_info.image === 'object' ? (
-                            <div className="mb-6">
-                                <img src={URL.createObjectURL(data.personal_info.image)} alt="Profile" className="w-32 h-32 object-cover rounded-full mx-auto" />
-                            </div>
-                        ) : null
-                    )}
-                </div>
+            {/* Centered Header */}
+            <header className="flex flex-col items-center justify-center py-10 border-b border-zinc-300">
+                {/* Image */}
+                {imageUrl && (
+                    <div className="mb-4">
+                        <img 
+                            src={imageUrl} 
+                            alt="Profile" 
+                            className="w-32 h-32 object-cover rounded-full mx-auto" 
+                            style={data.personal_info?.removeBackground ? { mixBlendMode: "multiply" } : {}}
+                        />
+                    </div>
+                )}
 
                 {/* Name + Title */}
-                <div className="col-span-2 flex flex-col justify-center py-10 px-8">
+                <div className="text-center">
                     <h1 className="text-4xl font-bold text-zinc-700 tracking-widest">
                         {data.personal_info?.full_name || "Your Name"}
                     </h1>
-                    <p className="uppercase text-zinc-600 font-medium text-sm tracking-widest">
+                    <p className="uppercase text-zinc-600 font-medium text-sm tracking-widest mt-2">
                         {data?.personal_info?.profession || "Profession"}
                     </p>
                 </div>
+            </header>
 
+            <div className="grid grid-cols-3">
                 {/* Left Sidebar */}
-                <aside className="col-span-1 border-r border-zinc-400 p-6 pt-0">
+                <aside className="col-span-1 border-r border-zinc-400 p-6 pt-6">
 
 
                     {/* Contact */}
@@ -106,7 +138,7 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                 </aside>
 
                 {/* Right Content */}
-                <main className="col-span-2 p-8 pt-0">
+                <main className="col-span-2 p-8 pt-6">
 
                     {/* Summary */}
                     {data.professional_summary && (

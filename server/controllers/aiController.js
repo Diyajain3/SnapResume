@@ -3,6 +3,29 @@
 import ai from "../configs/ai.js";
 import Resume from "../models/resume.js";
 
+const handleAIError = (error, res) => {
+  console.error("AI Controller Error:", error);
+  
+  if (error.status === 429 || error.message?.includes("429")) {
+    return res.status(429).json({
+      success: false,
+      message: "AI Rate Limit Exceeded: The API key has reached its daily or per-minute limit. Please try again in a few minutes.",
+    });
+  }
+
+  if (error.status === 401 || error.message?.includes("401")) {
+    return res.status(401).json({
+      success: false,
+      message: "AI Authentication Failed: The API key is invalid or has expired.",
+    });
+  }
+
+  return res.status(500).json({
+    success: false,
+    message: error.message || "Internal Server Error",
+  });
+};
+
 export const enhanceProfessionalSummary = async (req, res) => {
   try {
     const { userContent } = req.body;
@@ -62,12 +85,7 @@ The final output should sound modern, professional, and suitable for top compani
       enhancedContent,
     });
   } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
+    return handleAIError(error, res);
   }
 };
 
@@ -234,18 +252,13 @@ export const uploadResume = async (req, res) => {
     });
 
     const extractedData = response.choices[0].message.content;
-    const parsedData = json.parse(extractedData);
+    const parsedData = JSON.parse(extractedData);
     const newResume = await Resume.create({ userId, title, ...parsedData });
     res.json({
       resumeId: newResume._id, //when we will create new resume we will send resume id in response
     });
   } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
+    return handleAIError(error, res);
   }
 };
 
@@ -288,11 +301,6 @@ You are an expert in resume writing. Your task is to enhance the job description
       enhancedContent,
     });
   } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
+    return handleAIError(error, res);
   }
 };

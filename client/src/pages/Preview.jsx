@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { dummyResumeData } from '../assets/assets';
 import ResumePreview from '../components/ResumePreview';
-import { ArrowLeftIcon, Loader } from 'lucide-react/dist/cjs/lucide-react';
+import { ArrowLeftIcon, Loader } from 'lucide-react';
+import api from '../configs/api';
 
 const Preview = () => {
   const {resumeId}=useParams()
@@ -10,7 +11,33 @@ const Preview = () => {
   const [resumeData,setResumeData]=useState(null);
   const loadResume=async()=>
   {
-    setResumeData(dummyResumeData.find(resume=>resume._id===resumeId||null));
+    try {
+      const { data } = await api.get(`/api/resumes/public/${resumeId}`);
+      if (data.resume) {
+        const resume = data.resume;
+        resume.project = resume.projects || resume.project || [];
+        resume.experience = resume.experience || [];
+        resume.education = resume.education || [];
+        resume.skills = resume.skills || [];
+        setResumeData(resume);
+        setisLoading(false);
+        return;
+      }
+    } catch (error) {
+      console.log("Could not load public resume from API:", error.message);
+    }
+
+    const fallback = dummyResumeData.find(resume=>resume._id===resumeId);
+    if (fallback) {
+      const resumeCopy = { ...fallback };
+      resumeCopy.project = resumeCopy.projects || resumeCopy.project || [];
+      resumeCopy.experience = resumeCopy.experience || [];
+      resumeCopy.education = resumeCopy.education || [];
+      resumeCopy.skills = resumeCopy.skills || [];
+      setResumeData(resumeCopy);
+    } else {
+      setResumeData(null);
+    }
     setisLoading(false);
   }
 
@@ -22,7 +49,7 @@ const Preview = () => {
   return resumeData? (
     <div className='bg-slate-100'>
       <div className='max-w-3xl mx-auto py-10'>
-        <ResumePreview data={resumeData} template={resumeData.template} accentColor={resumeData.accentColor} className="py-4 bg-white"/>
+        <ResumePreview data={resumeData} template={resumeData.template} accentColor={resumeData.accent_color || resumeData.accentColor} className="py-4 bg-white"/>
       </div>
     </div>
   ):(

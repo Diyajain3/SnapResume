@@ -42,7 +42,7 @@ const Footer = () => {
 
   return (
     <div className="w-full">
-      <footer className="bg-slate-50 border-t border-slate-200 pt-16 pb-8 px-4 md:px-16 lg:px-24 xl:px-32 font-sans">
+      <footer id="contact" className="bg-slate-50 border-t border-slate-200 pt-16 pb-8 px-4 md:px-16 lg:px-24 xl:px-32 font-sans">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Brand & Description */}
           <div className="col-span-1">
