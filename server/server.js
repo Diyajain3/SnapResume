@@ -26,6 +26,11 @@ app.use(express.json());
 const clientDistPath = path.join(__dirname, "../client/dist");
 app.use(express.static(clientDistPath));
 
+// Ping route for UptimeRobot to keep server awake
+app.get("/ping", (req, res) => {
+  res.status(200).send("pong");
+});
+
 // API Routes
 app.use("/api/users", userRouter);
 app.use("/api/resumes", resumeRouter);
