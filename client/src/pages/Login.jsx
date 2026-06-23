@@ -209,7 +209,7 @@ const navigate = useNavigate();
               </div>
 
               {/* Forgot Password */}
-              {state === "login" && (
+              {/* {state === "login" && (
                 <div className="mt-4 text-right">
                   <button
                     type="button"
@@ -218,7 +218,7 @@ const navigate = useNavigate();
                     Forgot Password?
                   </button>
                 </div>
-              )}
+              )} */}
 
               {/* Submit Button */}
               <button
@@ -257,16 +257,16 @@ const navigate = useNavigate();
             </div>
 
             {/* Divider */}
-            <div className="flex items-center gap-4 my-8">
+            {/* <div className="flex items-center gap-4 my-8">
               <div className="flex-1 h-[1px] bg-slate-200"></div>
 
               <span className="text-sm text-slate-400">OR</span>
 
               <div className="flex-1 h-[1px] bg-slate-200"></div>
-            </div>
+            </div> */}
 
             {/* Google Button */}
-            <button
+            {/* <button
               type="button"
               className="w-full h-14 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition-all duration-300 flex items-center justify-center gap-3 text-slate-700 font-semibold"
             >
@@ -276,7 +276,7 @@ const navigate = useNavigate();
                 className="w-5 h-5"
               />
               Continue with Google
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

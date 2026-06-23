@@ -256,7 +256,7 @@ const Hero = () => {
             className="mt-12 flex flex-col sm:flex-row gap-4 w-full justify-center items-center"
           >
             <button
-              onClick={() => navigate("/app")}
+              onClick={() => navigate(user ? "/app" : "/login")}
               className="w-full sm:w-auto px-10 py-4 bg-indigo-700 text-white font-bold rounded-2xl active:scale-95 hover:bg-indigo-600 transition-all shadow-xl shadow-indigo-200"
             >
               Build My Resume
