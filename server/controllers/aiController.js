@@ -269,7 +269,6 @@ Return JSON following this exact structure (use null for missing fields):
           content: userPrompt,
         },
       ],
-      response_format: { type: "json_object" },
     });
 
     let extractedData = response.choices[0]?.message?.content || "{}";
