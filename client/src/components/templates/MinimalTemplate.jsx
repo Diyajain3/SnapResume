@@ -28,8 +28,9 @@ const MinimalTemplate = ({ data, accentColor }) => {
         }
         
         if (typeof img === "string" && url.includes("imagekit.io")) {
+            const baseUrl = url.split("?tr=")[0].split("&tr=")[0];
             const transform = data.personal_info?.removeBackground ? "w-300,h-300,fo-face,e-bgremove" : "w-300,h-300,fo-face";
-            url = url.includes("?") ? `${url}&tr=${transform}` : `${url}?tr=${transform}`;
+            url = `${baseUrl}?tr=${transform}`;
         }
         return url;
     }, [data.personal_info?.image, data.personal_info?.removeBackground]);

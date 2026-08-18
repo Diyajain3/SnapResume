@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 
 const connectDb = async () => {
   try {
+    if (mongoose.connection.readyState >= 1) {
+      return;
+    }
     let mongodbURI = process.env.MONGO_URI;
     const projectName = 'SnapResume';
 
