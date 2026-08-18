@@ -192,9 +192,9 @@ export const uploadResume = async (req, res) => {
     const { resumeText, title } = req.body;
     const userId = req.userId;
 
-    if (!resumeText) {
+    if (!resumeText || !resumeText.trim()) {
       return res.status(400).json({
-        message: "Missing required fields",
+        message: "Resume text is empty or could not be extracted from the file.",
       });
     }
 

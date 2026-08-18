@@ -93,6 +93,11 @@ function Dashboard() {
       setIsUploading(true);
       const text = await pdfToText(resume);
 
+      if (!text || !text.trim()) {
+        toast.error("Could not read text from this PDF. Please upload a text-readable PDF file (not a scanned image).");
+        return;
+      }
+
       const { data } = await api.post(
         "/api/ai/upload-resume",
         { resumeText: text, title },
