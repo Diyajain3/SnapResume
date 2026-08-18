@@ -37,7 +37,7 @@ export const enhanceProfessionalSummary = async (req, res) => {
     }
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
 
       messages: [
         {
@@ -115,7 +115,7 @@ export const enhanceProjectSummary = async (req, res) => {
     }
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
 
       messages: [
         {
@@ -257,7 +257,7 @@ Return JSON following this exact structure (use null for missing fields):
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
       messages: [
         {
           role: "system",
@@ -272,7 +272,8 @@ Return JSON following this exact structure (use null for missing fields):
       response_format: { type: "json_object" },
     });
 
-    const extractedData = response.choices[0].message.content;
+    let extractedData = response.choices[0]?.message?.content || "{}";
+    extractedData = extractedData.replace(/```json/g, "").replace(/```/g, "").trim();
     const parsedData = JSON.parse(extractedData);
     const newResume = await Resume.create({ userId, title, ...parsedData });
     res.json({
@@ -297,7 +298,7 @@ export const enhanceJobDescription = async (req, res) => {
     }
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
 
       messages: [
         {
