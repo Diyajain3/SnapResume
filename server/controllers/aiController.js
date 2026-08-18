@@ -37,7 +37,7 @@ export const enhanceProfessionalSummary = async (req, res) => {
     }
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
+      model: process.env.OPENAI_MODEL || "openai/gpt-oss-120b",
 
       messages: [
         {
@@ -115,7 +115,7 @@ export const enhanceProjectSummary = async (req, res) => {
     }
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
+      model: process.env.OPENAI_MODEL || "openai/gpt-oss-120b",
 
       messages: [
         {
@@ -257,7 +257,7 @@ Return JSON following this exact structure (use null for missing fields):
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
+      model: process.env.OPENAI_MODEL || "openai/gpt-oss-120b",
       messages: [
         {
           role: "system",
