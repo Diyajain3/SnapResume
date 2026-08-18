@@ -274,10 +274,71 @@ Return JSON following this exact structure (use null for missing fields):
 
     let extractedData = response.choices[0]?.message?.content || "{}";
     extractedData = extractedData.replace(/```json/g, "").replace(/```/g, "").trim();
-    const parsedData = JSON.parse(extractedData);
-    const newResume = await Resume.create({ userId, title, ...parsedData });
-    res.json({
-      resumeId: newResume._id, //when we create a new resume, we send resume id in response
+
+    // Extract only JSON substring between first { and last }
+    const firstBrace = extractedData.indexOf("{");
+    const lastBrace = extractedData.lastIndexOf("}");
+    if (firstBrace !== -1 && lastBrace !== -1) {
+      extractedData = extractedData.substring(firstBrace, lastBrace + 1);
+    }
+
+    let parsedData = {};
+    try {
+      parsedData = JSON.parse(extractedData);
+    } catch (parseErr) {
+      console.error("JSON parse error:", parseErr, "Raw output:", extractedData);
+      return res.status(500).json({
+        message: "Failed to parse AI resume extraction output. Please try again.",
+      });
+    }
+
+    const cleanResume = {
+      userId,
+      title: title || parsedData.title || "Uploaded Resume",
+      professional_summary: parsedData.professional_summary || "",
+      skills: Array.isArray(parsedData.skills) ? parsedData.skills : [],
+      personal_info: {
+        full_name: parsedData.personal_info?.full_name || "",
+        profession: parsedData.personal_info?.profession || "",
+        email: parsedData.personal_info?.email || "",
+        phone: parsedData.personal_info?.phone || "",
+        location: parsedData.personal_info?.location || "",
+        linkedin: parsedData.personal_info?.linkedin || "",
+        website: parsedData.personal_info?.website || "",
+        image: parsedData.personal_info?.image || "",
+        removeBackground: false,
+      },
+      experience: Array.isArray(parsedData.experience)
+        ? parsedData.experience.map((exp) => ({
+            company: exp.company || "",
+            position: exp.position || "",
+            start_date: exp.start_date || "",
+            end_date: exp.end_date || "",
+            description: exp.description || "",
+            is_current: !!exp.is_current,
+          }))
+        : [],
+      projects: Array.isArray(parsedData.projects)
+        ? parsedData.projects.map((proj) => ({
+            name: proj.name || "",
+            type: proj.type || "",
+            description: proj.description || "",
+          }))
+        : [],
+      education: Array.isArray(parsedData.education)
+        ? parsedData.education.map((edu) => ({
+            institution: edu.institution || "",
+            degree: edu.degree || "",
+            field: edu.field || "",
+            graduation_date: edu.graduation_date || "",
+            gpa: edu.gpa || "",
+          }))
+        : [],
+    };
+
+    const newResume = await Resume.create(cleanResume);
+    return res.status(200).json({
+      resumeId: newResume._id,
     });
   } catch (error) {
     return handleAIError(error, res);
