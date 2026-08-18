@@ -14,7 +14,8 @@ await connectDb();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 // Ping route
 app.get("/ping", (req, res) => {
@@ -25,5 +26,13 @@ app.get("/ping", (req, res) => {
 app.use("/api/users", userRouter);
 app.use("/api/resumes", resumeRouter);
 app.use("/api/ai", aiRouter);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("Global Express Error:", err);
+  res.status(err.status || 500).json({
+    message: err.message || "An unexpected error occurred",
+  });
+});
 
 export default app;
