@@ -2,7 +2,7 @@
 
 **An AI-assisted resume builder — pick a template, fill in your details, and let AI sharpen your summary and job descriptions.**
 
-🔗 **Live app:** [snap-resume-mazt.onrender.com](https://snap-resume-mazt.onrender.com/)
+🔗 **Live app:** [snap-resume-mazt.onrender.com]((https://snap-resume-xi.vercel.app/))
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=000)
 ![Node.js](https://img.shields.io/badge/Node.js-Express%205-339933?logo=nodedotjs&logoColor=fff)
